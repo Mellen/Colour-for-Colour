@@ -1,12 +1,13 @@
+using System;
+using System.Collections.Generic;
+using System.Text.RegularExpressions;
+using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Text.Formatting;
-using System.Text.RegularExpressions;
-using System;
-using System.Collections.Generic;
 
 namespace ColourForColour
 {
@@ -18,7 +19,7 @@ namespace ColourForColour
         IAdornmentLayer _layer;
         IWpfTextView _view;
         List<Tuple<int, int, Color>> _colourPositions;
-
+        object lockObject = new object();
 
         public ColourForColour(IWpfTextView view)
         {
@@ -30,7 +31,7 @@ namespace ColourForColour
         }
 
         /// <summary>
-        /// On layout change add the adornment to any reformatted lines
+        /// On layout change figure out where all the coulours are
         /// </summary>
         private void OnLayoutChanged(object sender, TextViewLayoutChangedEventArgs e)
         {
@@ -52,11 +53,22 @@ namespace ColourForColour
             }
         }
 
+        /// <summary>
+        /// Show the relevant colour swatch for the position of the mouse
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="args"></param>
         private void OnMouseHover(object sender, MouseHoverEventArgs args)
         {
             ShowColourSwatch(args.Position, args.TextPosition, args.View);
         }
 
+        /// <summary>
+        /// If the text position is within a colour then show that could on the screen
+        /// </summary>
+        /// <param name="position"></param>
+        /// <param name="textPosition"></param>
+        /// <param name="textView"></param>
         private void ShowColourSwatch(int position, IMappingPoint textPosition, ITextView textView)
         {
             _layer.RemoveAllAdornments();
@@ -85,17 +97,30 @@ namespace ColourForColour
                     Image image = new Image();
                     image.Source = drawingImage;
 
-                    //Align the image with the top of the bounds of the text geometry
                     Canvas.SetLeft(image, g.Bounds.Left - g.Bounds.Width);
                     Canvas.SetTop(image, g.Bounds.Top - (g.Bounds.Height*2));
-
-                    _layer.AddAdornment(AdornmentPositioningBehavior.TextRelative, charSpan, null, image, null); 
-                    _layer.Elements.
+                    _layer.AddAdornment(AdornmentPositioningBehavior.TextRelative, charSpan, null, image, null);
+                    Thread t = new Thread(p =>
+                    {
+                        Thread.Sleep(3500);
+                        lock (lockObject)
+                        {
+                            Application.Current.Dispatcher.Invoke(new Action(() =>
+                            {
+                                _layer.RemoveAdornmentsByVisualSpan(charSpan);
+                            }), new object[]{});
+                        }
+                    });
+                    t.Start();
                 }
             }
         }
 
-
+        /// <summary>
+        /// take a hex string and turn it into a 4 byte tuple
+        /// </summary>
+        /// <param name="colour"></param>
+        /// <returns></returns>
         private Tuple<byte, byte, byte, byte> BytesFromColourString(string colour)
         {
             string alpha;
@@ -134,76 +159,7 @@ namespace ColourForColour
                                                     , Convert.ToByte(blue, 16));
         }
 
-        /// <summary>
-        /// Within the given line add the scarlet box behind the a
-        /// </summary>
-        private void CreateVisuals(ITextViewLine line)
-        {
-            //grab a reference to the lines in the current TextView 
-            IWpfTextViewLineCollection textViewLines = _view.TextViewLines;
-            int start = line.Start;
-            int end = line.End;
-
-            var matches = Regex.Matches(_view.TextSnapshot.GetText(), "#(([0-9A-F]{6})|([0-9A-F]{8})|([0-9A-F]{3}))[\"<;]", RegexOptions.IgnoreCase);
-
-            _layer.RemoveAllAdornments();
-
-            foreach (var match in matches)
-            {
-                int startIndex = ((Match)match).Groups[1].Index;
-                int endIndex = ((Match)match).Groups[1].Index + ((Match)match).Groups[1].Length;
-                string colour = ((Match)match).Groups[1].Value;
-                SnapshotSpan span = new SnapshotSpan(_view.TextSnapshot, Span.FromBounds(startIndex, endIndex));
-                Tuple<byte, byte, byte, byte> colourbytes = BytesFromColourString(colour);
-                Color c = Color.FromArgb(colourbytes.Item1, colourbytes.Item2, colourbytes.Item3, colourbytes.Item4);
-                Geometry g = textViewLines.GetMarkerGeometry(span);
-                if (g != null)
-                {
-                    Brush brush = new SolidColorBrush(Color.FromArgb(0x20, 0x00, 0x00, 0xff));
-                    brush.Freeze();
-                    Brush penBrush = new SolidColorBrush(c);
-                    penBrush.Freeze();
-                    Pen pen = new Pen(penBrush, 0.5);
-                    pen.Freeze();
-                    GeometryDrawing drawing = new GeometryDrawing(brush, pen, g);
-                    drawing.Freeze();
-                    DrawingImage drawingImage = new DrawingImage(drawing);
-                    drawingImage.Freeze();
-
-                    Image image = new Image();
-                    image.Source = drawingImage;
-
-                    //Align the image with the top of the bounds of the text geometry
-                    Canvas.SetLeft(image, g.Bounds.Left);
-                    Canvas.SetTop(image, g.Bounds.Top);
-
-                    _layer.AddAdornment(AdornmentPositioningBehavior.TextRelative, span, null, image, null);
-                }
-            }
-            
-               /* if (t[i] == 'a')
-                {
-                    SnapshotSpan span = new SnapshotSpan(_view.TextSnapshot, Span.FromBounds(i, i + 1));
-                    Geometry g = textViewLines.GetMarkerGeometry(span);
-                    if (g != null)
-                    {
-                        GeometryDrawing drawing = new GeometryDrawing(_brush, _pen, g);
-                        drawing.Freeze();
-
-                        DrawingImage drawingImage = new DrawingImage(drawing);
-                        drawingImage.Freeze();
-
-                        Image image = new Image();
-                        image.Source = drawingImage;
-
-                        //Align the image with the top of the bounds of the text geometry
-                        Canvas.SetLeft(image, g.Bounds.Left);
-                        Canvas.SetTop(image, g.Bounds.Top);
-
-                        _layer.AddAdornment(AdornmentPositioningBehavior.TextRelative, span, null, image, null);
-                    }
-                }*/
-        }
+       
 
     }
 }
