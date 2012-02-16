@@ -5,12 +5,12 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("ColourForColour")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyTitle("Colour for Colour")]
+[assembly: AssemblyDescription("Colours html hex colour strings")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("ColourForColour")]
-[assembly: AssemblyCopyright("")]
+[assembly: AssemblyCompany("Mellen")]
+[assembly: AssemblyProduct("Colour for Colour")]
+[assembly: AssemblyCopyright("© Matthew Ellen")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

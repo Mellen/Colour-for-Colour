@@ -1,11 +1,16 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Vsix Version="1.0.0" xmlns="http://schemas.microsoft.com/developer/vsx-schema/2010">
+<Vsix xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" Version="1.0.0" xmlns="http://schemas.microsoft.com/developer/vsx-schema/2010">
   <Identifier Id="ColourForColour..a68d2d50-d7fc-4d66-b7f5-639d855cb4f8">
-    <Name>ColourForColour</Name>
-    <Author></Author>
+    <Name>Colour for Colour</Name>
+    <Author>Matthew Ellen</Author>
     <Version>1.0</Version>
-    <Description xml:space="preserve">This is a sample text-relative adornment extension to the Visual Studio Editor.</Description>
+    <Description xml:space="preserve">Hovering over a string that looks like a hex colour, e.g #deadbeef;, #deadbe;, #dea;, will show a colour swatch of the colour being hovered over.
+
+Licence: http://www.opensource.org/licenses/mit-license.php</Description>
     <Locale>1033</Locale>
+    <MoreInfoUrl>https://github.com/Mellen/Colour-for-Colour</MoreInfoUrl>
+    <Icon>CFC.ico</Icon>
+    <PreviewImage>CFCPreview.gif</PreviewImage>
     <SupportedProducts>
       <VisualStudio Version="10.0">
         <Edition>Pro</Edition>
@@ -14,7 +19,6 @@
     <SupportedFrameworkRuntimeEdition MinVersion="4.0" MaxVersion="4.0" />
   </Identifier>
   <References />
-
   <Content>
     <MefComponent>|%CurrentProject%|</MefComponent>
   </Content>
