@@ -64,11 +64,10 @@ namespace ColourForColour
         }
 
         /// <summary>
-        /// creates a colour swatch image
+        /// Creates a colour swatch image with background and border
         /// </summary>
-        /// <param name="colourPos"></param>
-        /// <param name="charSpan"></param>
-        /// <returns></returns>
+        /// <param name="colourPos">Position in the test where the colour, and what colour it is.</param>
+        /// <param name="charSpan">Text that the image will go above</param>
         private Image CreateSwatchImage(Tuple<int, int, Color> colourPos, SnapshotSpan charSpan)
         {
             IWpfTextViewLineCollection textViewLines = _view.TextViewLines;
@@ -89,7 +88,6 @@ namespace ColourForColour
             penBrushBorder.Freeze();
             Pen penBorder = new Pen(penBrushBorder, 0.5);
             penBorder.Freeze();
-
 
             Rect rWhite = new Rect(0, 0, 20, 40);
             RectangleGeometry rgWhite = new RectangleGeometry(rWhite);
