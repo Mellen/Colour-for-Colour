@@ -13,7 +13,7 @@ A Visual Studio 2010 extension. Shows a colour swatch when the mouse is hovered 
  - profit
 
 The code is &copy; Matthew Ellen.  
-The code in this project is released under an MIT style license. For more information see this page: http://www.opensource.org/licenses/mit-license.php
+The code in this project is released under an MIT style license. For more information see [this page](http://www.opensource.org/licenses/mit-license.php).
 
-Developed by Matthew Ellen. http://www.matthewellen.co.uk  
-Code hosted at GitHub. http://github.com / https://github.com/Mellen/Colour-for-Colour
+Developed by [Matthew Ellen](http://www.matthewellen.co.uk ).  
+Code hosted at [GitHub](https://github.com/Mellen/Colour-for-Colour).
