@@ -31,7 +31,7 @@ namespace ColourForColour
         }
 
         /// <summary>
-        /// On layout change figure out where all the coulours are
+        /// On layout change figure out where all the colours are
         /// </summary>
         private void OnLayoutChanged(object sender, TextViewLayoutChangedEventArgs e)
         {
@@ -164,7 +164,7 @@ namespace ColourForColour
         /// <summary>
         /// take a hex string and turn it into a 4 byte tuple
         /// </summary>
-        /// <param name="colour"></param>
+        /// <param name="colour">hex colour value string. e.g DEADBEEF</param>
         /// <returns></returns>
         private Tuple<byte, byte, byte, byte> BytesFromColourString(string colour)
         {
