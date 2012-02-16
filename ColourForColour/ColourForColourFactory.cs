@@ -20,7 +20,7 @@ namespace ColourForColour
         /// </summary>
         [Export(typeof(AdornmentLayerDefinition))]
         [Name("ColourForColour")]
-        [Order(After = PredefinedAdornmentLayers.Selection, Before = PredefinedAdornmentLayers.Text)]
+        [Order(After = PredefinedAdornmentLayers.Text, Before = PredefinedAdornmentLayers.Caret)]
         [TextViewRole(PredefinedTextViewRoles.Document)]
         public AdornmentLayerDefinition editorAdornmentLayer = null;
 
