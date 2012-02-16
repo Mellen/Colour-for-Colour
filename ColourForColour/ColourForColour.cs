@@ -64,6 +64,68 @@ namespace ColourForColour
         }
 
         /// <summary>
+        /// creates a colour swatch image
+        /// </summary>
+        /// <param name="colourPos"></param>
+        /// <param name="charSpan"></param>
+        /// <returns></returns>
+        private Image CreateSwatchImage(Tuple<int, int, Color> colourPos, SnapshotSpan charSpan)
+        {
+            IWpfTextViewLineCollection textViewLines = _view.TextViewLines;
+            Geometry g = textViewLines.GetMarkerGeometry(charSpan);
+            
+            Rect r = new Rect(5, 5, 30, 30);
+            RectangleGeometry rg = new RectangleGeometry(r);
+            Brush brush = new SolidColorBrush(colourPos.Item3);
+            brush.Freeze();
+            Brush penBrush = new SolidColorBrush(colourPos.Item3);
+            penBrush.Freeze();
+            Pen pen = new Pen(penBrush, 0.5);
+            pen.Freeze();
+            GeometryDrawing drawingfront = new GeometryDrawing(brush, pen, rg);
+            drawingfront.Freeze();
+
+            Brush penBrushBorder = new SolidColorBrush(Color.FromRgb(0xad, 0xad, 0xad));
+            penBrushBorder.Freeze();
+            Pen penBorder = new Pen(penBrushBorder, 0.5);
+            penBorder.Freeze();
+
+
+            Rect rWhite = new Rect(0, 0, 20, 40);
+            RectangleGeometry rgWhite = new RectangleGeometry(rWhite);
+            Brush brushWhite = new SolidColorBrush(Color.FromRgb(255, 255, 255));
+            brushWhite.Freeze();
+            GeometryDrawing drawingleft = new GeometryDrawing(brushWhite, penBorder, rgWhite);
+            drawingleft.Freeze();
+
+            Rect rBlack = new Rect(20, 0, 20, 40);
+            RectangleGeometry rgBlack = new RectangleGeometry(rBlack);
+            Brush brushBlack = new SolidColorBrush(Color.FromRgb(0, 0, 0));
+            brushBlack.Freeze();
+            GeometryDrawing drawingright = new GeometryDrawing(brushBlack, penBorder, rgBlack);
+            drawingright.Freeze();
+
+
+            DrawingGroup drawing = new DrawingGroup();
+            drawing.Children.Add(drawingleft);
+            drawing.Children.Add(drawingright);
+            drawing.Children.Add(drawingfront);
+            drawing.Freeze();
+
+            DrawingImage drawingImage = new DrawingImage(drawing);
+
+            drawingImage.Freeze();
+
+            Image image = new Image();
+            image.Source = drawingImage;
+
+            Canvas.SetLeft(image, g.Bounds.Left - g.Bounds.Width);
+            Canvas.SetTop(image, g.Bounds.Top - 40);
+
+            return image;
+        }
+
+        /// <summary>
         /// If the text position is within a colour then show that could on the screen
         /// </summary>
         /// <param name="position"></param>
@@ -79,26 +141,9 @@ namespace ColourForColour
                 var colourPos = _colourPositions.Find(cp => (cp.Item1 <= charSpan.Start) && (cp.Item2 >= charSpan.Start));
                 if(colourPos != null)
                 {
-                    IWpfTextViewLineCollection textViewLines = _view.TextViewLines;
-                    Geometry g = textViewLines.GetMarkerGeometry(charSpan);
-                    Rect r = new Rect(0,0, 30, 30);
-                    RectangleGeometry rg = new RectangleGeometry(r);
-                    Brush brush = new SolidColorBrush(colourPos.Item3);
-                    brush.Freeze();
-                    Brush penBrush = new SolidColorBrush(colourPos.Item3);
-                    penBrush.Freeze();
-                    Pen pen = new Pen(penBrush, 0.5);
-                    pen.Freeze();
-                    GeometryDrawing drawing = new GeometryDrawing(brush, pen, rg);
-                    drawing.Freeze();
-                    DrawingImage drawingImage = new DrawingImage(drawing);
-                    drawingImage.Freeze();
 
-                    Image image = new Image();
-                    image.Source = drawingImage;
+                    Image image = CreateSwatchImage(colourPos, charSpan);
 
-                    Canvas.SetLeft(image, g.Bounds.Left - g.Bounds.Width);
-                    Canvas.SetTop(image, g.Bounds.Top - (g.Bounds.Height*2));
                     _layer.AddAdornment(AdornmentPositioningBehavior.TextRelative, charSpan, null, image, null);
                     Thread t = new Thread(p =>
                     {
