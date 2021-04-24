@@ -1,8 +1,8 @@
-#Colour for Colour#
+# Colour for Colour
 
 A Visual Studio 2010 extension. Shows a colour swatch when the mouse is hovered over an HTML style colour (e.g. #DEADBEEF, #DEADBE, #DEA). Case insensitive, works with alpha values. The colour value must be 8, 6 or 3 characters long.
 
-##Installation instructions##
+## Installation instructions
  
  - run install.bat
  - open visual studio
